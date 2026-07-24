@@ -105,6 +105,8 @@ article h3{
     margin-bottom:10px;
 }
 
+
+
 article p{
     color:#555;
 }
@@ -172,7 +174,18 @@ footer{
     padding:20px;
     margin-top:60px;
 }
+.error{
+    color:#d9534f;
+    font-size:14px;
+    display:block;
+    margin-top:5px;
+}
 
+#successMessage{
+    color:#4CAF50;
+    font-weight:600;
+    margin-top:20px;
+}
 /* ---------- RESPONSIVE ---------- */
 
 @media(max-width:768px){
@@ -199,5 +212,6 @@ footer{
     main{
         width:95%;
     }
+
 
 }

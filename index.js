@@ -75,6 +75,28 @@ app.put("/blogs/:id", (req, res) => {
 
 });
 
+// Delete Blog
+app.delete("/blogs/:id", (req, res) => {
+
+    const id = parseInt(req.params.id);
+
+    const blogIndex = blogs.findIndex(blog => blog.id === id);
+
+    if (blogIndex === -1) {
+        return res.status(404).json({
+            message: "Blog not found"
+        });
+    }
+
+    const deletedBlog = blogs.splice(blogIndex, 1);
+
+    res.json({
+        message: "Blog deleted successfully!",
+        blog: deletedBlog
+    });
+
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

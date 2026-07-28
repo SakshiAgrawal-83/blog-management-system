@@ -3,10 +3,9 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 
-// Middleware
 app.use(express.json());
 
-// Store blog posts
+// Store blogs in memory
 let blogs = [];
 
 // Home Route
@@ -16,17 +15,21 @@ app.get("/", (req, res) => {
 
 // View all blogs
 app.get("/blogs", (req, res) => {
-    res.json(blogs);
+    res.status(200).json({
+        message: "Blogs retrieved successfully!",
+        totalBlogs: blogs.length,
+        blogs: blogs
+    });
 });
 
-// Add a new blog
+// Add a blog
 app.post("/blogs", (req, res) => {
 
     const { title, author, category, content } = req.body;
 
     if (!title || !author || !category || !content) {
         return res.status(400).json({
-            message: "Please fill in all fields."
+            message: "All fields are required."
         });
     }
 
@@ -47,7 +50,6 @@ app.post("/blogs", (req, res) => {
 
 });
 
-// Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

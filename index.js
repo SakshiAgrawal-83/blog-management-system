@@ -1,4 +1,11 @@
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
+require("dotenv").config();
+
+const mongoose = require("mongoose");
 const express = require("express");
+const Blog = require("./models/Blog");
 
 const app = express();
 const PORT = 3000;
@@ -6,8 +13,16 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(__dirname));
 
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+    console.log("✅ Connected to MongoDB Atlas");
+})
+.catch((err) => {
+    console.log("❌ MongoDB Connection Error");
+    console.log(err);
+});
 // Store blogs in memory
-let blogs = [];
 
 // Home Route
 app.get("/", (req, res) => {
@@ -15,16 +30,25 @@ app.get("/", (req, res) => {
 });
 
 // View all blogs
-app.get("/blogs", (req, res) => {
-    res.status(200).json({
-        message: "Blogs retrieved successfully!",
-        totalBlogs: blogs.length,
-        blogs: blogs
-    });
+app.get("/blogs", async (req, res) => {
+    try {
+        const blogs = await Blog.find();
+
+        res.json({
+            message: "Blogs retrieved successfully!",
+            totalBlogs: blogs.length,
+            blogs: blogs
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
 });
 
 // Add a blog
-app.post("/blogs", (req, res) => {
+app.post("/blogs", async (req, res) => {
 
     const { title, author, category, content } = req.body;
 
@@ -34,84 +58,108 @@ app.post("/blogs", (req, res) => {
         });
     }
 
-    const newBlog = {
-        id: blogs.length + 1,
-        title,
-        author,
-        category,
-        content
-    };
+    try {
 
-    blogs.push(newBlog);
+        const newBlog = await Blog.create({
+            title,
+            author,
+            category,
+            content
+        });
 
-    res.status(201).json({
-        message: "Blog added successfully!",
-        blog: newBlog
-    });
+        res.status(201).json({
+            message: "Blog added successfully!",
+            blog: newBlog
+        });
+
+    } catch(error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
 
 });
 
 // Update Blog (PUT)
-app.put("/blogs/:id", (req, res) => {
+app.put("/blogs/:id", async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const blog = blogs.find(blog => blog.id === id);
+        const updatedBlog = await Blog.findByIdAndUpdate(
+            req.params.id,
+            {
+                title: req.body.title,
+                author: req.body.author,
+                category: req.body.category,
+                content: req.body.content
+            },
+            { new: true }
+        );
 
-    if (!blog) {
-        return res.status(404).json({
-            message: "Blog not found"
+        if (!updatedBlog) {
+            return res.status(404).json({
+                message: "Blog not found"
+            });
+        }
+
+        res.json({
+            message: "Blog updated successfully!",
+            blog: updatedBlog
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
         });
     }
-
-    blog.title = req.body.title || blog.title;
-    blog.author = req.body.author || blog.author;
-    blog.category = req.body.category || blog.category;
-    blog.content = req.body.content || blog.content;
-
-    res.json({
-        message: "Blog updated successfully!",
-        blog: blog
-    });
 
 });
 
 // Get Single Blog
-app.get("/blogs/:id", (req, res) => {
+app.get("/blogs/:id", async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
+        const blog = await Blog.findById(req.params.id);
 
-    const blog = blogs.find(blog => blog.id === id);
+        if (!blog) {
+            return res.status(404).json({
+                message: "Blog not found"
+            });
+        }
 
-    if (!blog) {
-        return res.status(404).json({
-            message: "Blog not found"
+        res.json(blog);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
         });
     }
-
-    res.json(blog);
 
 });
 
 // Delete Blog
-app.delete("/blogs/:id", (req, res) => {
+app.delete("/blogs/:id", async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const blogIndex = blogs.findIndex(blog => blog.id === id);
+        const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
 
-    if (blogIndex === -1) {
-        return res.status(404).json({
-            message: "Blog not found"
+        if (!deletedBlog) {
+            return res.status(404).json({
+                message: "Blog not found"
+            });
+        }
+
+        res.json({
+            message: "Blog deleted successfully!",
+            blog: deletedBlog
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
         });
     }
-
-    const deletedBlog = blogs.splice(blogIndex, 1);
-
-    res.json({
-        message: "Blog deleted successfully!",
-        blog: deletedBlog
-    });
 
 });
 

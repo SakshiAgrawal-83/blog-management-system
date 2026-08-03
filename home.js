@@ -25,11 +25,11 @@ async function loadBlogs() {
 
                     <div class="buttons">
 
-                        <button class="edit-btn" onclick="editBlog(${blog.id})">
+                        <button class="edit-btn" onclick="editBlog('${blog._id}')">
                             Edit
                         </button>
 
-                        <button class="delete-btn" onclick="deleteBlog(${blog.id})">
+                        <button class="delete-btn" onclick="deleteBlog('${blog._id}')">
                             Delete
                         </button>
 

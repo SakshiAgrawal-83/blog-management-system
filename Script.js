@@ -74,7 +74,7 @@ form.addEventListener("submit", async function (e) {
 
         alert(data.message);
 
-        window.location.href = "home.html";
+        window.location.href = "index.html";
     } catch (error) {
 
         console.log(error);

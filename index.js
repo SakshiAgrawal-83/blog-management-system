@@ -4,6 +4,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // Store blogs in memory
 let blogs = [];
@@ -72,6 +73,23 @@ app.put("/blogs/:id", (req, res) => {
         message: "Blog updated successfully!",
         blog: blog
     });
+
+});
+
+// Get Single Blog
+app.get("/blogs/:id", (req, res) => {
+
+    const id = parseInt(req.params.id);
+
+    const blog = blogs.find(blog => blog.id === id);
+
+    if (!blog) {
+        return res.status(404).json({
+            message: "Blog not found"
+        });
+    }
+
+    res.json(blog);
 
 });
 

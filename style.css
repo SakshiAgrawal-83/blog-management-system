@@ -215,3 +215,48 @@ footer{
 
 
 }
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.card-header h3{
+    margin:0;
+    color:#5E8078;
+    font-size:24px;
+}
+
+.buttons{
+    display:flex;
+    gap:10px;
+}
+
+.edit-btn,
+.delete-btn{
+    border:none;
+    padding:8px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:0.3s;
+    font-size:14px;
+}
+
+.edit-btn{
+    background:#5E8078;
+    color:white;
+}
+
+.edit-btn:hover{
+    background:#F2C3B9;
+}
+
+.delete-btn{
+    background:#5E8078;
+    color:white;
+}
+
+.delete-btn:hover{
+    background:#F2C3B9;
+}
